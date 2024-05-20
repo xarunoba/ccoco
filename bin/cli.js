@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-
+import packageFile from "../package.json" with { type: "json" };
 import { resolve, posix } from "node:path";
 import fs from "node:fs/promises";
 import { pathToFileURL } from "url";
@@ -44,6 +44,20 @@ const checkFlags = () => {
     enabledFlags.forEach((flag) => {
       if (!flags.q) console.log(`    ❯ ${flag}`);
     });
+  }
+};
+
+/**
+ * Check cache to skip git checks
+ */
+const checkCache = async () => {
+  try {
+    await fs.access(process.cwd() + "/.ccoco/.cache");
+    console.log("✔ .cache file exists. Skipping git checks.");
+    return true;
+  } catch (error) {
+    console.log("✘ .cache file does not exist. Git checks will be performed.");
+    return false;
   }
 };
 
@@ -135,8 +149,7 @@ const replaceConfigFiles = async (config) => {
         }
 
         // Get main config directory and file
-        const mainFileDir = posix.resolve(process.cwd(), config.mainConfigDir);
-        const mainFile = posix.resolve(mainFileDir, file);
+        const mainFile = posix.resolve(file);
 
         // Get branch name
         const { stdout } = await execAsync("git branch --show-current");
@@ -231,6 +244,7 @@ const replaceConfigFiles = async (config) => {
         }
 
         // Copy config file
+        console.log(mainFile);
         await fs.copyFile(branchFile, mainFile);
         if (!flags.q) console.log(`✔ ${file} ❯ ${branch} ❯ Replaced config!`);
       } catch (error) {
@@ -250,11 +264,21 @@ const main = async () => {
 
   checkFlags();
 
-  // Check if git is installed
-  await checkGitVersion();
+  // Check if .cache file exists
+  const hasCache = await checkCache();
+  if (!hasCache) {
+    // Check if git is installed
+    await checkGitVersion();
 
-  // Check if the current directory is a git repository and if HEAD exists
-  await checkGitRepo();
+    // Check if the current directory is a git repository and if HEAD exists
+    await checkGitRepo();
+
+    // Add .cache file
+    await fs.writeFile(
+      process.cwd() + "/.ccoco/.cache",
+      `${packageFile.version}`,
+    );
+  }
 
   // Load config
   const config = await loadConfig();
