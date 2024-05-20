@@ -57,7 +57,7 @@ pnpm dlx @xarunoba/ccoco
 yarn dlx @xarunoba/ccoco
 ```
 
-### flags
+### Flags
 
 You can add the following flags for `ccoco`:
 
@@ -65,11 +65,11 @@ You can add the following flags for `ccoco`:
 - `-h, --help` — Show help
 - `-q, --quiet` — Will not log anything to the console
 
-### sub-branches
+## Using sub-branches
 
 `ccoco` will recursively check if a sub-branch has a config file until it reaches the "root" of the sub-branch.
 
-### Example
+#### Example
 
 1. Branch `nested/one/two` does not have a config file created.
 2. `ccoco` will recursively check for the config file existing in `nested/one` up until the root `nested` and will fail if it cannot find one.
