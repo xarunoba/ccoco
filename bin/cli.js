@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import packageFile from "../package.json" with { type: "json" };
 import { resolve, posix } from "node:path";
 import fs from "node:fs/promises";
 import { pathToFileURL } from "url";
@@ -274,10 +273,7 @@ const main = async () => {
     await checkGitRepo();
 
     // Add .cache file
-    await fs.writeFile(
-      process.cwd() + "/.ccoco/.cache",
-      `${packageFile.version}`,
-    );
+    await fs.writeFile(process.cwd() + "/.ccoco/.cache", `keep me`);
   }
 
   // Load config
