@@ -4,4 +4,5 @@ node_modules
 # Ignores .env file
 .env
 
+# Ignores .ccoco folder
 .ccoco
