@@ -37,6 +37,10 @@ yarn add --dev @xarunoba/ccoco
 yarn run ccoco
 ```
 
+### .gitignore
+
+Please add `.ccoco` in your `.gitignore` file.
+
 ## Usage
 
 ### npm
