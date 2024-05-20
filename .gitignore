@@ -6,3 +6,6 @@ node_modules
 
 # Ignores .ccoco folder
 .ccoco
+
+# Ignores ccoco.config.js
+ccoco.config.js
