@@ -1,0 +1,7 @@
+# Node dependencies
+node_modules
+
+# Ignores .env file
+.env
+
+.ccoco
