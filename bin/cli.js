@@ -116,9 +116,10 @@ const loadConfig = async () => {
       const { default: config } = await import(configUrl);
       return setConfigDefaults(config);
     } catch (error) {
-      console.warn(
-        `⚠ Config file not found. Generating a default config file.`,
-      );
+      if (!flags.q)
+        console.warn(
+          `⚠ Config file not found. Generating a default config file.`,
+        );
       try {
         await fs.writeFile(configPath, defaultConfigFile);
         const { default: config } = await import(configUrl);
@@ -143,7 +144,8 @@ const replaceConfigFiles = async (config) => {
       try {
         // Check if file is string
         if (typeof file !== "string") {
-          console.warn(`⚠ ${file} is not a file string. Skipped.`);
+          if (!flags.q)
+            console.warn(`⚠ ${file} is not a file string. Skipped.`);
           return;
         }
 
@@ -160,7 +162,7 @@ const replaceConfigFiles = async (config) => {
 
         // Check if branch is a subranch
         const isSubBranch = branch.split("/").length > 1;
-        if (isSubBranch)
+        if (isSubBranch && !flags.q)
           console.log(`✔ ${file} ❯ ${branch} ❯ Sub-branch detected!`);
         let subBranchFallbackFile = branchFile
           .split("/")
@@ -190,9 +192,10 @@ const replaceConfigFiles = async (config) => {
         } catch (error) {
           if (!flags.q && error.code === "ENOENT") {
             if (isSubBranch) {
-              console.warn(
-                `⚠ ${file} ❯ ${branch} ❯ Cannot find sub-branch config file.\n⚠ ${file} ❯ ${branch} ❯ Checking for fallback file...`,
-              );
+              if (!flags.q)
+                console.warn(
+                  `⚠ ${file} ❯ ${branch} ❯ Cannot find sub-branch config file.\n⚠ ${file} ❯ ${branch} ❯ Checking for fallback file...`,
+                );
               let HasFallbackFile = false;
               while (subBranchFallbackFile !== branchFileDir) {
                 try {
@@ -214,18 +217,23 @@ const replaceConfigFiles = async (config) => {
               }
 
               if (HasFallbackFile) {
-                console.log(`✔ ${file} ❯ ${branch} ❯ Found fallback config!`);
+                if (!flags.q)
+                  console.log(
+                    `✔ ${file} ❯ ${branch} ❯ Found fallback config!`,
+                  );
                 return;
               } else {
-                console.warn(
-                  `⚠ ${file} ❯ ${branch} ❯ Cannot find fallback config file. Skipped.\n⚠ Please create this file \"${branchFile}\"`,
-                );
+                if (!flags.q)
+                  console.warn(
+                    `⚠ ${file} ❯ ${branch} ❯ Cannot find fallback config file. Skipped.\n⚠ Please create this file \"${branchFile}\"`,
+                  );
                 return;
               }
             } else {
-              console.warn(
-                `⚠ ${file} ❯ ${branch} ❯ Cannot find branch config file. Skipped.\n⚠ Please create this file \"${branchFile}\"`,
-              );
+              if (!flags.q)
+                console.warn(
+                  `⚠ ${file} ❯ ${branch} ❯ Cannot find branch config file. Skipped.\n⚠ Please create this file \"${branchFile}\"`,
+                );
               return;
             }
           } else console.error(`✘ ${file} ❯ ${branch} ❯ ${error}`);
