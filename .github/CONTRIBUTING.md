@@ -1,6 +1,6 @@
-# Contributing to `@xarunoba/clai`
+# Contributing to `@xarunoba/ccoco`
 
-Thank you for your interest in contributing to `@xarunoba/clai`! We welcome all contributions.
+Thank you for your interest in contributing to `@xarunoba/ccoco`! We welcome all contributions.
 
 ## Code of Conduct
 
@@ -28,6 +28,6 @@ If you find a bug, please open an issue and provide detailed information about h
 
 ## Contact
 
-If you have any questions or need further assistance, feel free to contact us at `clai@xaru.win`.
+If you have any questions or need further assistance, feel free to contact us at `ccoco@xaru.win`.
 
 We appreciate your contributions!
