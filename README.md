@@ -113,6 +113,20 @@ You can add the following flags for `ccoco`:
 - `-h, --help` — Show help
 - `-q, --quiet` — Will not log anything to the console
 
+## Configuring `ccoco`
+
+You can configure `ccoco` by editing or creating the `ccoco.config.js` file. (This file will be automatically generated when running `ccoco`)
+
+### Example
+
+```javascript
+export default {
+  branchConfigDir: ".ccoco/env", // the directory where the config files per branch are located. defaults to ".ccoco/configs"
+  files: [".env", ".env.production", ".env.somemode"], // the main config files to be replaced, you can add more if you want. defaults to [".env"]
+  mainConfigDir: ".", // the directory where the main config files are located. defaults to the root project directory, "."
+};
+```
+
 ## Integrations
 
 ### With [`simple-git-hooks`](https://github.com/toplenboren/simple-git-hooks)
