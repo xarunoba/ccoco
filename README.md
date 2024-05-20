@@ -9,7 +9,7 @@ Change your configurations on checkout for easy environment change. Integrate wi
 
 ## Why
 
-My team didn't want to populate the `package.json` too much with scripts so I created a tool that can easily replace the main config file after every checkout. `ccoco` fixes this issue by checking for lockfile updates and running install.
+My team didn't want to populate the `package.json` too much with scripts so I created a tool that can easily replace the main config files after every checkout. `ccoco` fixes this issue by automatically changing your main config files per branch name.
 
 ## Installation
 
@@ -63,9 +63,16 @@ You can add the following flags for `ccoco`:
 
 - `-v, --version` — Show version number
 - `-h, --help` — Show help
-- `-c, --cleaninstall` — use `ci` (npm) or `--frozen-lockfile` (pnpm, yarn) when installing
-- `-s, --strict` — Will immediately exit if any issues are found
 - `-q, --quiet` — Will not log anything to the console
+
+### sub-branches
+
+`ccoco` will recursively check if a sub-branch has a config file until it reaches the "root" of the sub-branch.
+
+### Example
+
+1. Branch `nested/one/two` does not have a config file created.
+2. `ccoco` will recursively check for the config file existing in `nested/one` up until the root `nested` and will fail if it cannot find one.
 
 ## Integrations
 
@@ -78,11 +85,10 @@ Integrating with [`simple-git-hooks`](https://github.com/toplenboren/simple-git-
 {
   ...
   "simple-git-hooks": {
-    // I prefer always using the latest version of ccoco
-    // instead of installing it as a dev dependency.
-    // If you have installed it locally, you can use:
-    // "post-checkout": "npx ccoco"
-    "post-checkout": "npx @xarunoba/ccoco"
+    // If you prefer on always using the latest version of ccoco
+    // instead of using ccoco as a devDependency, use this:
+    // "post-checkout": "npx @xarunoba/ccoco"
+    "post-checkout": "npx ccoco"
   }
   ...
 }
