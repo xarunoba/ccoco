@@ -5,7 +5,7 @@
   "main": "bin/cli.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/xarunoba/ccoco.git"
+    "url": "git+https://github.com/xarunoba/ccoco.git"
   },
   "type": "module",
   "files": [
