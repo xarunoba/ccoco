@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { resolve } from "node:path";
+import { resolve, posix } from "node:path";
 import fs from "node:fs/promises";
 import { pathToFileURL } from "url";
 import { argv, exit } from "node:process";
@@ -77,7 +77,7 @@ const checkGitRepo = async () => {
  * Set config default values.
  */
 const setConfigDefaults = (config) => {
-  if (!config.branchConfigDir) config.branchConfigDir = ".ccoco";
+  if (!config.branchConfigDir) config.branchConfigDir = ".ccoco/configs";
   if (!config.files || !config.files.length) config.files = [".env"];
   if (!config.mainConfigDir) config.mainConfigDir = ".";
   return config;
@@ -87,7 +87,7 @@ const setConfigDefaults = (config) => {
  * The generated default config file for ccoco.
  */
 const defaultConfigFile = `export default {
-  // branchConfigDir: ".ccoco", // the directory where the config files per branch are located
+  // branchConfigDir: ".ccoco/configs", // the directory where the config files per branch are located
   // files: [".env"], // the main config files to be replaced
   // mainConfigDir: ".", // the directory where the main config files are located
 };`;
@@ -134,74 +134,107 @@ const replaceConfigFiles = async (config) => {
           return;
         }
 
-        // Resolve main config file path
-        let mainConfigFile = `./${file}`;
-        if (typeof config.mainConfigDir === "string") {
-          mainConfigFile = `${config.mainConfigDir}/${file}`;
-        }
+        // Get main config directory and file
+        const mainFileDir = posix.resolve(process.cwd(), config.mainConfigDir);
+        const mainFile = posix.resolve(mainFileDir, file);
 
         // Get branch name
         const { stdout } = await execAsync("git branch --show-current");
         const branch = stdout.trim();
 
-        // Resolve branch config file path
-        let branchFile = "";
-        if (config.branchConfigDir) {
-          branchFile = `./${config.branchConfigDir}/${file}.${branch}`;
-        } else branchFile = `${file}.${branch}`;
+        // Get branch config directory and file
+        let branchFileDir = posix.resolve(config.branchConfigDir, file);
+        let branchFile = posix.resolve(branchFileDir, branch);
 
-        // Check if branch config file exists
-        try {
-          await fs.access(branchFile);
-          if (!flags.q)
-            console.log(`✔ ${file} ❯ Found branch config file: ${branchFile}`);
-        } catch (error) {
-          if (!flags.q)
-            console.log(
-              `✘ ${file} ❯ Could not find config file: ${branchFile}. Skipped.`,
-            );
-          return;
-        }
+        // Check if branch is a subranch
+        const isSubBranch = branch.split("/").length > 1;
+        if (isSubBranch)
+          console.log(`✔ ${file} ❯ ${branch} ❯ Sub-branch detected!`);
+        let subBranchFallbackFile = branchFile
+          .split("/")
+          .slice(0, -1)
+          .join("/");
 
-        // Check if main config file exists and delete it
+        // Check if file directory exists
         try {
-          await fs.access(mainConfigFile);
-          await fs.rm(mainConfigFile);
+          await fs.access(branchFileDir);
         } catch (error) {
           if (!flags.q)
             console.warn(
-              `⚠ ${file} ❯ Could not find config file: ${mainConfigFile}. Skipped deletion.`,
-            );
-        }
-
-        // Check if mainConfigDir exists and create it if not
-        try {
-          await fs.access(config.mainConfigDir);
-        } catch (error) {
-          if (!flags.q)
-            console.warn(
-              `⚠ ${file} ❯ Cannot find main config directory: ${config.mainConfigDir}`,
+              `⚠ ${file} ❯ Cannot find branch config directory. Attempting to create.`,
             );
           try {
-            await fs.mkdir(config.mainConfigDir, { recursive: true });
-            if (!flags.q)
-              console.log(
-                `✔ ${file} ❯ Created main config directory: ${config.mainConfigDir}`,
-              );
+            await fs.mkdir(branchFileDir, { recursive: true });
+            if (!flags.q) console.log(`✔ ${file} ❯ Branch config created!`);
           } catch (error) {
             console.error(`✘ ${file} ❯ ${error}`);
             exit(1);
           }
         }
 
-        // Copy branch config file to main config file
-        await fs.copyFile(branchFile, mainConfigFile);
-        if (!flags.q)
-          console.log(
-            `✔ ${file} ❯ Successfully replaced config file: ${branchFile} -> ${mainConfigFile}`,
-          );
+        // Check if config file for branch exists
+        try {
+          await fs.access(branchFile);
+        } catch (error) {
+          if (!flags.q && error.code === "ENOENT") {
+            if (isSubBranch) {
+              console.warn(
+                `⚠ ${file} ❯ ${branch} ❯ Cannot find sub-branch config file.\n⚠ ${file} ❯ ${branch} ❯ Checking for fallback file...`,
+              );
+              let HasFallbackFile = false;
+              while (subBranchFallbackFile !== branchFileDir) {
+                try {
+                  await fs.access(subBranchFallbackFile);
+                  branchFile = subBranchFallbackFile;
+                  HasFallbackFile = true;
+                  break;
+                } catch (error) {
+                  if (error.code === "ENOENT") {
+                    subBranchFallbackFile = subBranchFallbackFile
+                      .split("/")
+                      .slice(0, -1)
+                      .join("/");
+                  } else {
+                    console.error(`✘ ${file} ❯ ${branch} ❯ ${error}`);
+                    exit(1);
+                  }
+                }
+              }
+
+              if (HasFallbackFile) {
+                console.log(`✔ ${file} ❯ ${branch} ❯ Found fallback config!`);
+                return;
+              } else {
+                console.warn(
+                  `⚠ ${file} ❯ ${branch} ❯ Cannot find fallback config file. Skipped.\n⚠ Please create this file \"${branchFile}\"`,
+                );
+                return;
+              }
+            } else {
+              console.warn(
+                `⚠ ${file} ❯ ${branch} ❯ Cannot find branch config file. Skipped.\n⚠ Please create this file \"${branchFile}\"`,
+              );
+              return;
+            }
+          } else console.error(`✘ ${file} ❯ ${branch} ❯ ${error}`);
+        }
+
+        // Remove existing main config file
+        try {
+          await fs.rm(mainFile);
+        } catch (error) {
+          if (!flags.q && error.code === "ENOENT")
+            console.log(
+              `❯ ${file} ❯ Main config file not found. Skipped removal.`,
+            );
+          else console.error(`✘ ${file} ❯ ${error}`);
+        }
+
+        // Copy config file
+        await fs.copyFile(branchFile, mainFile);
+        if (!flags.q) console.log(`✔ ${file} ❯ ${branch} ❯ Replaced config!`);
       } catch (error) {
-        console.error(`An error occurred when handling config file: ${error}`);
+        console.error(`✘ ${file} ❯ ${error}`);
         exit(1);
       }
     }),
@@ -209,7 +242,7 @@ const replaceConfigFiles = async (config) => {
 };
 
 /**
- * Main function to execute the ccoco.
+ * The main function to execute the ccoco.
  */
 const main = async () => {
   const startTime = Date.now();
