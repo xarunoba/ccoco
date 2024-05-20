@@ -1,6 +1,6 @@
 {
   "name": "@xarunoba/ccoco",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Change configs on checkout.",
   "main": "bin/cli.js",
   "repository": {
