@@ -1,7 +1,7 @@
 # @xarunoba/ccoco 🥥
 
 ![Static Badge](https://img.shields.io/badge/Made_with-%E2%9D%A4%EF%B8%8F-red?style=for-the-badge) ![NPM License](https://img.shields.io/npm/l/%40xarunoba%2Fccoco?style=for-the-badge)
-![GitHub package.json version](https://img.shields.io/github/package-json/v/xarunoba/ccoco?style=for-the-badge&logo=npm)
+![NPM Version](https://img.shields.io/npm/v/%40xarunoba%2Fccoco?style=for-the-badge&logo=npm)
 
 **`ccoco`** — change config on checkout
 
@@ -121,10 +121,10 @@ You can configure `ccoco` by editing or creating the `ccoco.config.js` file. (Th
 
 ```javascript
 export default {
-  branchConfigDir: ".ccoco/env", // the directory where the config files per branch are located. defaults to ".ccoco/configs"
-  files: [".env", ".env.production", ".env.somemode"], // the main config files to be replaced, you can add more if you want. defaults to [".env"]
-  mainConfigDir: ".", // the directory where the main config files are located. defaults to the root project directory, "."
-};
+  branchConfigDir: '.ccoco/env', // the directory where the config files per branch are located. defaults to ".ccoco/configs"
+  files: ['.env', '.env.production', '.env.somemode'], // the main config files to be replaced, you can add more if you want. defaults to [".env"]
+  mainConfigDir: '.', // the directory where the main config files are located. defaults to the root project directory, "."
+}
 ```
 
 ## Integrations
