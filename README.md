@@ -1,7 +1,7 @@
 # @xarunoba/ccoco 🥥
 
 ![Static Badge](https://img.shields.io/badge/Made_with-%E2%9D%A4%EF%B8%8F-red?style=for-the-badge) ![NPM License](https://img.shields.io/npm/l/%40xarunoba%2Fccoco?style=for-the-badge)
-![GitHub package.json version](https://img.shields.io/github/package-json/v/xarunoba/ccoco?style=for-the-badge&logo=npm)
+![NPM Version](https://img.shields.io/npm/v/%40xarunoba%2Fccoco?style=for-the-badge&logo=npm)
 
 **`ccoco`** — change config on checkout
 
