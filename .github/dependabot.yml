@@ -1,10 +1,10 @@
 version: 2
 updates:
   - package-ecosystem: npm
-    directory: /
+    directory: /packaging/npm
     schedule:
       interval: daily
     commit-message:
-      prefix: "⬆️ "
+      prefix: '⬆️ '
       # prefix: 'chore: '
     target-branch: develop
