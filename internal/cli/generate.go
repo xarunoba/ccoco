@@ -44,10 +44,10 @@ func generate(args []string) {
 			log.Fatalf("Error opening repository: %v", err)
 		}
 
-		// currentBranch, err := repository.Head()
-		// if err != nil {
-		// 	log.Fatalf("Error getting current branch: %v", err)
-		// }
+		currentBranch, err := repository.Head()
+		if err != nil {
+			log.Fatalf("Error getting current branch: %v", err)
+		}
 
 		branches, err := repository.Branches()
 		if err != nil {
@@ -56,7 +56,7 @@ func generate(args []string) {
 
 		// Generate per-branch config files
 		if err := branches.ForEach(func(branch *plumbing.Reference) error {
-			// configFile := filepath.Join(".", configFileAsDir)
+			configFile := filepath.Join(".", configFileAsDir)
 			branchFile := filepath.Join(path, branch.Name().Short())
 			if _, err := os.Stat(branchFile); err == nil {
 				log.Printf("Config file %s already exists", branchFile)
@@ -65,9 +65,9 @@ func generate(args []string) {
 
 			// If current branch, read the config file and save it to the branch file
 			var data []byte
-			// if currentBranch.Name().Short() == branch.Name().Short() {
-			// 	data, _ = os.ReadFile(configFile)
-			// }
+			if currentBranch.Name().Short() == branch.Name().Short() {
+				data, _ = os.ReadFile(configFile)
+			}
 			if err := os.WriteFile(branchFile, data, 0644); err != nil {
 				log.Printf("Error creating config file %s: %v", path, err)
 				return nil
