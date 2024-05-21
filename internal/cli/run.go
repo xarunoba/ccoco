@@ -16,8 +16,9 @@ func init() {
 }
 
 var runCmd = &cobra.Command{
-	Use:   "run",
-	Short: "Run ccoco",
+	Use:     "run",
+	Aliases: []string{"r", "start"},
+	Short:   "Run ccoco",
 	Long: `Run ccoco. 
 This will change config files based on your current branch.`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -70,12 +71,14 @@ func run() {
 					continue
 				}
 
+				// Read data from current path
 				data, err := os.ReadFile(path)
 				if err != nil {
 					log.Printf("Failed to read current path: %v", err)
 					continue
 				}
 
+				// Write data to config file
 				if err := os.WriteFile(filepath.Join(configData.FilesDir, file), data, 0755); err != nil {
 					log.Printf("Failed to write current path: %v", err)
 					continue
@@ -90,6 +93,7 @@ func run() {
 		} else {
 			path := filepath.Join(config.ConfigsDir, file, currentBranch.Name().Short())
 
+			// Check if current path is a directory
 			info, err := os.Stat(path)
 			if err != nil {
 				log.Printf("Failed to stat current path: %v", err)
@@ -100,12 +104,14 @@ func run() {
 				continue
 			}
 
+			// Read data from current path
 			data, err := os.ReadFile(path)
 			if err != nil {
 				log.Printf("Failed to read current path: %v", err)
 				continue
 			}
 
+			// Write data to config file
 			if err := os.WriteFile(filepath.Join(configData.FilesDir, file), data, 0755); err != nil {
 				log.Printf("Failed to write current path: %v", err)
 				continue

@@ -7,9 +7,8 @@ import (
 )
 
 type File struct {
-	Files    []string
-	FilesDir string
-	Strict   bool
+	Files    []string `json:"files"`
+	FilesDir string   `json:"filesDir"`
 }
 
 const FileName = "ccoco.config.json"
@@ -18,18 +17,16 @@ const CcocoDir = ".ccoco"
 const CacheDir = CcocoDir + "/cache"
 const ConfigsDir = CcocoDir + "/configs"
 const PreflightsDir = CcocoDir + "/preflights"
-const CcocoExecutable = CacheDir + "/ccoco"
 
-var defaultFile = File{
+var DefaultFile = File{
 	Files:    []string{"env"},
 	FilesDir: ".",
-	Strict:   false,
 }
 
 func GetFile() File {
 	data, err := os.ReadFile(FileName)
 	if err != nil {
-		return defaultFile
+		return DefaultFile
 	}
 
 	var configFile File
@@ -38,10 +35,10 @@ func GetFile() File {
 	}
 
 	if len(configFile.Files) == 0 {
-		configFile.Files = defaultFile.Files
+		configFile.Files = DefaultFile.Files
 	}
 	if configFile.FilesDir == "" {
-		configFile.FilesDir = defaultFile.FilesDir
+		configFile.FilesDir = DefaultFile.FilesDir
 	}
 
 	return configFile
