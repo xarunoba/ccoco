@@ -16,8 +16,9 @@ func init() {
 }
 
 var runCmd = &cobra.Command{
-	Use:   "run",
-	Short: "Run ccoco",
+	Use:     "run",
+	Aliases: []string{"r", "start"},
+	Short:   "Run ccoco",
 	Long: `Run ccoco. 
 This will change config files based on your current branch.`,
 	Run: func(cmd *cobra.Command, args []string) {
