@@ -2,12 +2,14 @@ package cli
 
 import (
 	"log"
+	"os"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 )
 
 var cli = &cobra.Command{
-	Use:   "ccoco",
+	Use:   filepath.Base(os.Args[0]),
 	Short: "Change config on checkout",
 	Long: `ccoco changes your config files based on your current branch.
 Integrate with git hooks to automatically change config on checkout.`,
