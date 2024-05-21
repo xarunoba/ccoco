@@ -1,3 +1,7 @@
+# WIP: Rewrite from JavaScript to Go
+
+For more details check Issue #6. If you want to find the old implementation, check the [`old-js` branch](https://github.com/xarunoba/ccoco/tree/old-js).
+
 # @xarunoba/ccoco 🥥
 
 ![Static Badge](https://img.shields.io/badge/Made_with-%E2%9D%A4%EF%B8%8F-red?style=for-the-badge) ![NPM License](https://img.shields.io/npm/l/%40xarunoba%2Fccoco?style=for-the-badge)
