@@ -76,9 +76,15 @@ func generate(args []string) {
 				data, _ = os.ReadFile(configFile)
 			}
 
-			// Create config file
+			// Create parent directory if it doesn't exist
+			if err := os.MkdirAll(filepath.Dir(branchFile), 0755); err != nil {
+				log.Printf("Error creating config file %s: %v", branchFile, err)
+				return nil
+			}
+
+			// Write config file
 			if err := os.WriteFile(branchFile, data, 0644); err != nil {
-				log.Printf("Error creating config file %s: %v", path, err)
+				log.Printf("Error creating config file %s: %v", branchFile, err)
 				return nil
 			}
 
