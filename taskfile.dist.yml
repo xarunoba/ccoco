@@ -5,3 +5,13 @@ tasks:
     dir: '{{.USER_WORKING_DIR}}/packaging/npm'
     cmds:
       - npm {{.CLI_ARGS}}
+
+  release-*:
+    vars:
+      VERSION: '{{index .MATCH 0}}'
+    cmds:
+      - git commit --allow-empty -m "🔖 release version {{.VERSION}}"
+      - git tag {{index .MATCH 0}}
+      # - git push origin --follow-tags
+    preconditions:
+      - test "$(git rev-parse --abbrev-ref HEAD)" = "main"
