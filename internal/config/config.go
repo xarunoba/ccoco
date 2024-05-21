@@ -7,9 +7,8 @@ import (
 )
 
 type File struct {
-	Files    []string
-	FilesDir string
-	Strict   bool
+	Files    []string `json:"files"`
+	FilesDir string   `json:"filesDir"`
 }
 
 const FileName = "ccoco.config.json"
@@ -22,7 +21,6 @@ const PreflightsDir = CcocoDir + "/preflights"
 var DefaultFile = File{
 	Files:    []string{"env"},
 	FilesDir: ".",
-	Strict:   false,
 }
 
 func GetFile() File {
