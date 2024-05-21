@@ -18,8 +18,9 @@ func init() {
 }
 
 var generateCmd = &cobra.Command{
-	Use:   "generate [FILE1 FILE2 ...]",
-	Short: "Generate per-branch config files",
+	Use:     "generate [FILE1 FILE2 ...]",
+	Aliases: []string{"gen"},
+	Short:   "Generate per-branch config files",
 	Long: `Generates per-branch config files for a specific config file.
 This will populate the branch configs folder based on the existing branches.
 	`,
@@ -73,7 +74,13 @@ func generate(args []string) {
 			// If current branch, read the config file and save it to the branch file
 			data := []byte("")
 			if currentBranch.Name().Short() == branch.Name().Short() {
-				data, _ = os.ReadFile(configFile)
+				data, err = os.ReadFile(configFile)
+				if err != nil {
+					log.Printf("Skipped copying config file %s to %s", configFile, branchFile)
+				} else {
+					log.Printf("Copied config file %s to %s", configFile, branchFile)
+				}
+
 			}
 
 			// Create parent directory if it doesn't exist
