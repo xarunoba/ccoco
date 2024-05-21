@@ -1,0 +1,15 @@
+version: '3'
+
+tasks:
+  build:
+    cmds:
+      - go build -v -i main.go
+
+  publish:
+    cmds:
+      -
+
+  npm:
+    dir: '{{.USER_WORKING_DIR}}/packaging/npm'
+    cmds:
+      - npm {{.CLI_ARGS}}

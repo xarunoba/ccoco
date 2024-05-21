@@ -1,0 +1,61 @@
+{
+  "name": "@xarunoba/ccoco",
+  "version": "0.0.0-ccoco-versioner",
+  "description": "Change configs on checkout.",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xarunoba/ccoco.git"
+  },
+  "type": "module",
+  "bin": {
+    "cc": "./bin/index.js",
+    "ccoco": "./bin/index.js"
+  },
+  "scripts": {
+    "postinstall": "node postinstall.js",
+    "prepare": "npx simple-git-hooks"
+  },
+  "author": "Jeter Jude C. Santos <me@xaru.win> (https://xaru.win)",
+  "license": "MIT",
+  "keywords": [
+    "cli",
+    "ccoco",
+    "config-changer",
+    "config",
+    "env",
+    "git",
+    "post-checkout",
+    "developer-experience"
+  ],
+  "homepage": "https://github.com/xarunoba/ccoco",
+  "bugs": {
+    "url": "https://github.com/xarunoba/ccoco/issues"
+  },
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+  "cpu": [
+    "x64",
+    "arm64",
+    "ia32"
+  ],
+  "dependencies": {
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "lint-staged": "^15.2.2",
+    "prettier": "^3.2.5",
+    "simple-git-hooks": "^2.11.1"
+  },
+  "lint-staged": {
+    "*.{js,json,md,yml}": "npx prettier --write"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npx lint-staged",
+    "post-merge": "npx @xarunoba/clai -c"
+  },
+  "packageManager": "npm@10.8.0+sha512.c21f77b91733829ec70e73cc88b5dc0a4bf685a81d252d3327d293ff7d5dd05a173f4dbeaa037600ec29696f397f14569229e5dab10b7cfc3e0a30575b8f3f8d"
+}
