@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"runtime"
 
+	"github.com/go-git/go-git/v5"
 	"github.com/spf13/cobra"
 	"github.com/xarunoba/ccoco/internal/config"
 )
@@ -56,6 +57,12 @@ This will add a post-checkout hook to automatically change config on checkout.
 }
 
 func injectGitHook() {
+
+	_, err := git.PlainOpen(".")
+	if err != nil {
+		log.Fatalf("Error opening repository: %v", err)
+	}
+
 	script := getPostCheckoutScript()
 	path := ".git/hooks/post-checkout"
 
@@ -68,7 +75,7 @@ func injectGitHook() {
 	executable := exec.Command("bash", path)
 	executable.Stdout = os.Stdout
 	executable.Stderr = os.Stderr
-	err := executable.Run()
+	err = executable.Run()
 	if err != nil {
 		log.Fatalf("Error executing post-checkout hook: %v", err)
 	}
