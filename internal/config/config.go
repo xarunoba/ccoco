@@ -18,7 +18,6 @@ const CcocoDir = ".ccoco"
 const CacheDir = CcocoDir + "/cache"
 const ConfigsDir = CcocoDir + "/configs"
 const PreflightsDir = CcocoDir + "/preflights"
-const CcocoExecutable = CacheDir + "/ccoco"
 
 var DefaultFile = File{
 	Files:    []string{"env"},
