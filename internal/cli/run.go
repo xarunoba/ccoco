@@ -26,31 +26,40 @@ This will change config files based on your current branch.`,
 }
 
 func run() {
+	// Load config
 	configData := config.GetFile()
 
+	// Open repository
 	repository, err := git.PlainOpen(".")
 	if err != nil {
 		log.Fatalf("Error opening repository: %v", err)
 	}
+
+	// Get current branch
 	currentBranch, err := repository.Head()
 	if err != nil {
 		log.Fatalf("Error getting current branch: %v", err)
 	}
+
+	// Check if current branch is a sub-branch
 	isSubBranch := false
-
 	splitCurrentBranch := strings.Split(currentBranch.Name().Short(), "/")
-
 	if len(splitCurrentBranch) > 1 {
 		isSubBranch = true
 		log.Printf("Current branch is a sub-branch: %s", currentBranch.Name().Short())
 	}
+
 	for _, file := range configData.Files {
 		if isSubBranch {
 			var subBranchPath string
 			isSuccess := false
-			for i := len(splitCurrentBranch) - 1; i >= 0; i-- {
-				subBranchPath = "/" + splitCurrentBranch[i] + subBranchPath
+
+			// Iterate through sub-branches
+			for i := len(splitCurrentBranch) - 1; i > 0; i-- {
+				subBranchPath = strings.Join(splitCurrentBranch[:i], "/")
 				path := filepath.Join(config.ConfigsDir, file, subBranchPath)
+
+				// Check if current path is a directory
 				info, err := os.Stat(path)
 				if err != nil {
 					log.Printf("Failed to stat current path: %v", err)
