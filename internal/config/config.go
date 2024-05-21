@@ -20,7 +20,7 @@ const ConfigsDir = CcocoDir + "/configs"
 const PreflightsDir = CcocoDir + "/preflights"
 const CcocoExecutable = CacheDir + "/ccoco"
 
-var defaultFile = File{
+var DefaultFile = File{
 	Files:    []string{"env"},
 	FilesDir: ".",
 	Strict:   false,
@@ -29,7 +29,7 @@ var defaultFile = File{
 func GetFile() File {
 	data, err := os.ReadFile(FileName)
 	if err != nil {
-		return defaultFile
+		return DefaultFile
 	}
 
 	var configFile File
@@ -38,10 +38,10 @@ func GetFile() File {
 	}
 
 	if len(configFile.Files) == 0 {
-		configFile.Files = defaultFile.Files
+		configFile.Files = DefaultFile.Files
 	}
 	if configFile.FilesDir == "" {
-		configFile.FilesDir = defaultFile.FilesDir
+		configFile.FilesDir = DefaultFile.FilesDir
 	}
 
 	return configFile

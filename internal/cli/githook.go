@@ -58,6 +58,7 @@ This will add a post-checkout hook to automatically change config on checkout.
 
 func injectGitHook() {
 
+	// Open repository to check if it exists
 	_, err := git.PlainOpen(".")
 	if err != nil {
 		log.Fatalf("Error opening repository: %v", err)
