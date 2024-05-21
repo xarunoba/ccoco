@@ -18,7 +18,7 @@ func init() {
 }
 
 var generateCmd = &cobra.Command{
-	Use:   "generate [CONFIGFILE]",
+	Use:   "generate [FILE1 FILE2 ...]",
 	Short: "Generate per-branch config files",
 	Long: `Generates per-branch config files for a specific config file.
 This will populate the branch configs folder based on the existing branches.
