@@ -17,15 +17,10 @@ My team didn't want to populate the `package.json` too much with scripts so I cr
 
 Download from the Release page, add it to your PATH, and then initialize `ccoco` in your project directory.
 
-```bash
-ccoco init
-```
-
 ### Go Install
 
 ```bash
 go install github.com/xarunoba/ccoco@latest
-ccoco init
 ```
 
 ### npm/pnpm/yarn
@@ -42,30 +37,45 @@ Initialize `ccoco`
 
 ```bash
 ccoco init
+# or use alias: ccoco i
 ```
 
-Adds a file in `ccoco.config.json`
+Add file/s in `ccoco.config.json`
 
 ```bash
-ccoco add
+ccoco add file1 file2 ...
+# ccoco add myconfiguration.yml another.json
+# or use alias: ccoco a
+```
+
+Remove file/s in `ccoco.config.json`
+
+```bash
+ccoco remove file1 file2 ...
+# ccoco remove myconfiguration.yml another.json
+# or use alias: ccoco rm
 ```
 
 Generate per-branch config files based on your git branches and the files mentioned in `ccoco.config.json`
 
 ```bash
 ccoco generate
+# or use alias: ccoco gen
 ```
 
 Inject `ccoco` in your post-checkout git hook
 
 ```bash
 ccoco githook
+# or use alias: ccoco gh
 ```
 
 Manually run ccoco (when not using the git hook)
 
 ```bash
 ccoco run
+# or use alias: ccoco r
+# or use alias: ccoco start
 ```
 
 ### Using sub-branches
