@@ -18,10 +18,10 @@ func init() {
 }
 
 var generateCmd = &cobra.Command{
-	Use:     "generate [FILE1 FILE2 ...]",
+	Use:     "generate",
 	Aliases: []string{"gen"},
 	Short:   "Generate per-branch config files",
-	Long: `Generates per-branch config files for a specific config file.
+	Long: `Generates per-branch config files for the files specified in ccoco.config.json.
 This will populate the branch configs folder based on the existing branches.
 	`,
 	Args: cobra.NoArgs,
