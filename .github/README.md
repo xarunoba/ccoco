@@ -44,11 +44,16 @@ Initialize `ccoco`
 ccoco init
 ```
 
-Generate per-branch config files based on your git branches
+Adds a file in `ccoco.config.json`
 
 ```bash
-ccoco generate .env
-# ccoco generate someconfig.yml .env .env.production something.toml
+ccoco add
+```
+
+Generate per-branch config files based on your git branches and the files mentioned in `ccoco.config.json`
+
+```bash
+ccoco generate
 ```
 
 Inject `ccoco` in your post-checkout git hook
