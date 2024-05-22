@@ -14,7 +14,6 @@ type File struct {
 const FileName = "ccoco.config.json"
 const CcocoDir = ".ccoco"
 
-const CacheDir = CcocoDir + "/cache"
 const ConfigsDir = CcocoDir + "/configs"
 const PreflightsDir = CcocoDir + "/preflights"
 

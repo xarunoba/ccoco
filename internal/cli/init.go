@@ -27,9 +27,6 @@ var initCmd = &cobra.Command{
 		if err := os.MkdirAll(config.CcocoDir, 0755); err != nil {
 			log.Printf("Error creating directory %s: %v", config.PreflightsDir, err)
 		}
-		if err := os.MkdirAll(config.CacheDir, 0755); err != nil {
-			log.Printf("Error creating directory %s: %v", config.PreflightsDir, err)
-		}
 		if err := os.MkdirAll(config.ConfigsDir, 0755); err != nil {
 			log.Printf("Error creating directory %s: %v", config.ConfigsDir, err)
 		}
