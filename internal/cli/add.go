@@ -33,25 +33,11 @@ func addFiles(files []string) {
 
 	configFile.Files = dedupeSlice(configFile.Files)
 
-	configData, err := json.Marshal(configFile.Files)
+	configData, err := json.Marshal(configFile)
 	if err != nil {
 		log.Printf("Error marshalling default config: %v", err)
 	}
 	if err := os.WriteFile(config.FileName, configData, 0644); err != nil {
 		log.Printf("Error creating file %s: %v", config.FileName, err)
 	}
-}
-
-func dedupeSlice[T comparable](sliceList []T) []T {
-	dedupeMap := make(map[T]struct{})
-	list := []T{}
-
-	for _, slice := range sliceList {
-		if _, exists := dedupeMap[slice]; !exists {
-			dedupeMap[slice] = struct{}{}
-			list = append(list, slice)
-		}
-	}
-
-	return list
 }
