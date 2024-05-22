@@ -13,8 +13,5 @@ package-lock.json
 pnpm-lock.json
 node_modules
 
-# Version manager
-version.json
-
 dist/
 .env*
