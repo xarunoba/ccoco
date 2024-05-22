@@ -19,7 +19,7 @@ const ConfigsDir = CcocoDir + "/configs"
 const PreflightsDir = CcocoDir + "/preflights"
 
 var DefaultFile = File{
-	Files:    []string{"env"},
+	Files:    []string{".env"},
 	FilesDir: ".",
 }
 
