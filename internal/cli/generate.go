@@ -24,14 +24,15 @@ var generateCmd = &cobra.Command{
 	Long: `Generates per-branch config files for a specific config file.
 This will populate the branch configs folder based on the existing branches.
 	`,
-	Args: cobra.MinimumNArgs(1),
+	Args: cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		generate(args)
+		generate()
 	},
 }
 
-func generate(args []string) {
-	for _, configFileAsDir := range args {
+func generate() {
+	configFiles := config.GetFile().Files
+	for _, configFileAsDir := range configFiles {
 		path := filepath.Join(config.ConfigsDir, configFileAsDir)
 
 		// Create directory if it doesn't exist
