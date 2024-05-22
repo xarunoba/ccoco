@@ -1,0 +1,8 @@
+#!/bin/sh
+version=${VERSION#v}
+
+cat << EOF > ./internal/version/version.go
+package version
+
+var Version = "$version"
+EOF
