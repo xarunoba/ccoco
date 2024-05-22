@@ -1,5 +1,5 @@
 #!/bin/sh
-version=${VERSION#v}
+version=${1#v}
 
 cat << EOF > ./internal/version/version.go
 package version

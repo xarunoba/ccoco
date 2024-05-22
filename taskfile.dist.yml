@@ -10,7 +10,7 @@ tasks:
     vars:
       VERSION: '{{index .MATCH 0}}'
     cmds:
-      - ./versionmanager VERSION="{{.VERSION}}"
+      - bash ./versionmanager {{.VERSION}}
       - git add ./internal/version/version.go
       - git commit -m "🔖 release version {{.VERSION}}"
       - git tag {{index .MATCH 0}}
