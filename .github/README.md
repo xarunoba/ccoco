@@ -9,7 +9,8 @@ Change your configurations on checkout for easy config environment change. Integ
 
 ## Why
 
-My team didn't want to populate the `package.json` too much with scripts so I created a tool that can easily replace the main config files whenever a branch changed. `ccoco` fixes this issue by automatically changing your main config files per branch name. This tool is not only limited to Node.js thanks to the rewrite to Go.
+My team didn't want to populate the `package.json` too much with scripts so I created a tool that can easily replace the main config files whenever a branch changed.
+`ccoco` initially started as a tool specifically used for the Node.js ecosystem but has been rewritten to Go for platform independence. You can use `ccoco` for any kinds of projects as long as it is within a Git repository.
 
 ## Installation
 
@@ -25,7 +26,19 @@ go install github.com/xarunoba/ccoco@latest
 
 ### npm/pnpm/yarn
 
-Coming soon!
+You can install `ccoco` from the `npmjs` repository.
+
+```bash
+npm install -D @xarunoba/ccoco
+pnpm add -D @xarunoba/ccoco
+yarn add -D @xarunoba/ccoco
+
+npx ccoco
+pnpm ccoco
+yarn ccoco
+```
+
+There's also an extra alias for ccoco for `npm/pnpm/yarn` where instead of `npx ccoco` you can simply do `npx cc`.
 
 ### .gitignore
 
@@ -63,14 +76,14 @@ ccoco generate
 # or use alias: ccoco gen
 ```
 
-Inject `ccoco` in your post-checkout git hook
+Inject `ccoco` in your post-checkout git hook.
 
 ```bash
 ccoco githook
 # or use alias: ccoco gh
 ```
 
-Manually run ccoco (when not using the git hook)
+Manually run ccoco when not using the git hook injection OR when you want to integrate it with a git hook manager.
 
 ```bash
 ccoco run
