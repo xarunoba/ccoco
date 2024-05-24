@@ -6,15 +6,19 @@ tasks:
     cmds:
       - npm {{.CLI_ARGS}}
 
-  release-*:
-    vars:
-      VERSION: '{{index .MATCH 0}}'
+  release:
+    requires:
+      vars: [VERSION]
     cmds:
-      - bash ./versionmanager {{.VERSION}}
+      - 'sed -i "s/var Version = ".*"/var Version = \"{{.VERSION}}\"/" ./internal/version/version.go'
+      - 'sed -i "s/\"version\": ".*",/\"version\": \"{{.VERSION}}\",/" ./packaging/npm/package.json'
       - git add ./internal/version/version.go
-      - git commit -m "🔖 release version {{.VERSION}}"
-      - git tag {{index .MATCH 0}}
+      - git add ./packaging/npm/package.json
+      # - git commit -m "🔖 release version {{.VERSION}}"
+      # - git tag {{.VERSION}}
       # - git push origin
       # - git push origin --tags
+      # - task npm -- publish
     preconditions:
       - test "$(git rev-parse --abbrev-ref HEAD)" = "main"
+      # - task npm -- publish --dry-run
