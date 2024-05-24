@@ -39,13 +39,23 @@ done
 
 # Run ccoco
 `
-
-	if runtime.GOOS == "windows" {
-		script += filepath.ToSlash(os.Args[0])
-	} else {
-		script += os.Args[0]
+	repository, err := git.PlainOpen(".")
+	if err != nil {
+		log.Fatalf("Error opening repository: %v", err)
 	}
-	script = script + ` run`
+	worktree, err := repository.Worktree()
+	if err != nil {
+		log.Fatalf("Error getting worktree: %v", err)
+	}
+
+	relativePath, err := filepath.Rel(worktree.Filesystem.Root(), os.Args[0])
+	if runtime.GOOS == "windows" {
+		relativePath = filepath.ToSlash(relativePath)
+	}
+	if err != nil {
+		log.Fatalf("Error getting relative path: %v", err)
+	}
+	script += relativePath + ` run`
 
 	return script
 }
