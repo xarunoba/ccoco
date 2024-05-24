@@ -55,7 +55,7 @@ done
 	if err != nil {
 		log.Fatalf("Error getting relative path: %v", err)
 	}
-	script += relativePath + ` run`
+	script += relativePath + " run"
 
 	return script
 }
@@ -91,7 +91,7 @@ func injectGitHook() {
 
 	// Execute the post-checkout hook when skipGitHookExecute is false
 	if !skipGitHookExecute {
-		executable := exec.Command("bash", path)
+		executable := exec.Command("/bin/sh", path)
 		executable.Stdout = os.Stdout
 		executable.Stderr = os.Stderr
 		err = executable.Run()
