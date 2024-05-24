@@ -1,7 +1,7 @@
 # @xarunoba/ccoco 🥥
 
-![Static Badge](https://img.shields.io/badge/Made_with-%E2%9D%A4%EF%B8%8F-red?style=for-the-badge) ![NPM License](https://img.shields.io/npm/l/%40xarunoba%2Fccoco?style=for-the-badge)
-![NPM Version](https://img.shields.io/npm/v/%40xarunoba%2Fccoco?style=for-the-badge&logo=npm)
+![Static Badge](https://img.shields.io/badge/Made_with-%E2%9D%A4%EF%B8%8F-red?style=for-the-badge) [![License](https://img.shields.io/npm/l/%40xarunoba%2Fccoco?style=for-the-badge)](https://github.com/xarunoba/ccoco?tab=MIT-1-ov-file#readme)
+[![NPM Version](https://img.shields.io/npm/v/%40xarunoba%2Fccoco?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@xarunoba/ccoco?activeTab=readme)
 
 **`ccoco`** — change config on checkout
 
@@ -38,7 +38,7 @@ pnpm ccoco
 yarn ccoco
 ```
 
-There's also an extra alias for ccoco for `npm/pnpm/yarn` where instead of `npx ccoco` you can simply do `npx cc`.
+There's also an extra alias for `ccoco` for `npm/pnpm/yarn` where instead of `npx ccoco` you can simply do `npx cc`.
 
 ### .gitignore
 
@@ -53,7 +53,7 @@ ccoco init
 # or use alias: ccoco i
 ```
 
-Add file/s in `ccoco.config.json`
+Add file/s to `ccoco.config.json`
 
 ```bash
 ccoco add file1 file2 ...
@@ -61,7 +61,7 @@ ccoco add file1 file2 ...
 # or use alias: ccoco a
 ```
 
-Remove file/s in `ccoco.config.json`
+Remove file/s from `ccoco.config.json`
 
 ```bash
 ccoco remove file1 file2 ...
@@ -69,14 +69,14 @@ ccoco remove file1 file2 ...
 # or use alias: ccoco rm
 ```
 
-Generate per-branch config files based on your git branches and the files mentioned in `ccoco.config.json`
+Generate per-branch config files based on your current repository's list of branches and the files mentioned in `ccoco.config.json`
 
 ```bash
 ccoco generate
 # or use alias: ccoco gen
 ```
 
-Inject `ccoco` in your post-checkout git hook.
+Inject `ccoco` in your `post-checkout` git hook.
 
 ```bash
 ccoco githook
@@ -95,7 +95,7 @@ ccoco run
 
 `ccoco` will recursively check if a sub-branch has a config file until it reaches the "root" of the sub-branch.
 
-##### Example
+#### Example
 
 1. Branch `nested/one/two` does not have a config file created.
 2. `ccoco` will recursively check for the config file existing in `nested/one` up until the root `nested` and will fail if it cannot find one.
@@ -110,3 +110,9 @@ ccoco run
   "filesDir": "." // this is the directory where the config file will be placed when switched every branch change.
 }
 ```
+
+### Preflights
+
+You can set your preflight scripts in the `.ccoco/preflights` directory. These scripts will execute before `ccoco`.
+
+> This will only run when you have injected `ccoco` via the `ccoco githook` command.
