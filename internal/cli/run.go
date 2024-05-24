@@ -117,7 +117,7 @@ func run() {
 				continue
 			}
 
-			log.Printf("Config file changed for branch %sw: %s", currentBranch.Name().Short(), file)
+			log.Printf("Config file changed for branch %s: %s", currentBranch.Name().Short(), file)
 		}
 	}
 }
