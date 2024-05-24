@@ -1,4 +1,4 @@
-name: goreleaser
+name: Release to GitHub
 
 on:
   push:
