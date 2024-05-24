@@ -9,7 +9,8 @@ Change your configurations on checkout for easy environment change. Integrate wi
 
 ## Why
 
-My team didn't want to populate the `package.json` too much with scripts so I created a tool that can easily replace the main config files after every checkout. `ccoco` fixes this issue by automatically changing your main config files per branch name.
+My team didn't want to populate the `package.json` too much with scripts so I created a tool that can easily replace the main config files whenever a branch changed.
+`ccoco` initially started as a tool specifically used for the Node.js ecosystem but has been rewritten to Go for platform independence. You can use `ccoco` for any kinds of projects as long as it is within a Git repository.
 
 ## More Details
 

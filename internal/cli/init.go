@@ -75,7 +75,7 @@ echo "Running preflight script"`
 
 		// Create config file if it doesn't exist with default values
 		if _, err := os.Stat(config.FileName); os.IsNotExist(err) {
-			configData, err := json.Marshal(config.DefaultFile)
+			configData, err := json.MarshalIndent(config.DefaultFile, "", "  ")
 			if err != nil {
 				log.Printf("Error marshalling default config: %v", err)
 			}

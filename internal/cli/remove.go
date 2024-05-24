@@ -37,7 +37,7 @@ func removeFiles(files []string) {
 
 	configFile.Files = dedupeSlice(configFile.Files)
 
-	configData, err := json.Marshal(configFile)
+	configData, err := json.MarshalIndent(configFile, "", "  ")
 	if err != nil {
 		log.Printf("Error marshalling default config: %v", err)
 	}
