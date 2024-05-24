@@ -1,6 +1,6 @@
 {
   "name": "@xarunoba/ccoco",
-  "version": "0.0.0-ccoco-versioner",
+  "version": "0.6.2",
   "description": "Change configs on checkout.",
   "main": "index.js",
   "repository": {
@@ -13,7 +13,7 @@
     "ccoco": "./bin/index.js"
   },
   "scripts": {
-    "postinstall": "node postinstall.js",
+    "install": "node install.js",
     "prepare": "npx simple-git-hooks"
   },
   "author": "Jeter Jude C. Santos <me@xaru.win> (https://xaru.win)",
@@ -40,9 +40,11 @@
   "cpu": [
     "x64",
     "arm64",
-    "ia32"
+    "ia32",
+    "x32"
   ],
   "dependencies": {
+    "node-downloader-helper": "^2.1.9",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
