@@ -15,7 +15,7 @@ tasks:
       - git add ./internal/version/version.go
       - git add ./packaging/npm/package.json
       # - git commit -m "🔖 release version {{.VERSION}}"
-      # - git tag {{.VERSION}}
+      # - git tag v{{.VERSION}}
       # - git push origin
       # - git push origin --tags
       # - task npm -- publish
