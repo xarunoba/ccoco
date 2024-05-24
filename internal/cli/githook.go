@@ -33,7 +33,7 @@ for file in ./` + config.PreflightsDir + `/*; do
     echo "Running $file"
     "$file"
   else
-    echo "Skipping $file (not executable)"
+    echo "Cannot execute $file. Skipping."
   fi
 done
 
