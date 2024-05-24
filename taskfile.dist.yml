@@ -18,7 +18,5 @@ tasks:
       # - git tag v{{.VERSION}}
       # - git push origin
       # - git push origin --tags
-      # - task npm -- publish
     preconditions:
       - test "$(git rev-parse --abbrev-ref HEAD)" = "main"
-      # - task npm -- publish --dry-run
