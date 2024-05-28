@@ -1,4 +1,4 @@
-name: Release to GitHub
+name: Release
 
 on:
   push:
@@ -22,6 +22,11 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: 1.22.x
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts'
+          registry-url: 'https://registry.npmjs.org'
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v5
         with:
@@ -30,3 +35,7 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish package on NPM 📦
+        run: cd packaging/npm && npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
