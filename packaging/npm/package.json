@@ -9,8 +9,8 @@
   },
   "type": "module",
   "bin": {
-    "cc": "./bin/index.js",
-    "ccoco": "./bin/index.js"
+    "cc": "bin/index.js",
+    "ccoco": "bin/index.js"
   },
   "scripts": {
     "install": "node install.js",
@@ -44,8 +44,7 @@
     "x32"
   ],
   "dependencies": {
-    "node-downloader-helper": "^2.1.9",
-    "yargs": "^17.7.2"
+    "node-downloader-helper": "^2.1.9"
   },
   "devDependencies": {
     "lint-staged": "^15.2.2",

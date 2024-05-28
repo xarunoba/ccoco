@@ -39,22 +39,30 @@ done
 
 # Run ccoco
 `
+
+	// Open repository to check if it exists
 	repository, err := git.PlainOpen(".")
 	if err != nil {
 		log.Fatalf("Error opening repository: %v", err)
 	}
+
+	// Get the worktree of the repository
 	worktree, err := repository.Worktree()
 	if err != nil {
 		log.Fatalf("Error getting worktree: %v", err)
 	}
 
+	// Get the relative path from the git worktree root to ccoco executable
 	relativePath, err := filepath.Rel(worktree.Filesystem.Root(), os.Args[0])
+
+	// Convert Windows paths to Unix
 	if runtime.GOOS == "windows" {
 		relativePath = filepath.ToSlash(relativePath)
 	}
 	if err != nil {
 		log.Fatalf("Error getting relative path: %v", err)
 	}
+
 	script += relativePath + " run"
 
 	return script

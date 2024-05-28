@@ -6,6 +6,7 @@ import { DownloaderHelper } from "node-downloader-helper";
 import { fileURLToPath } from "url";
 import { createRequire } from "module";
 import { createGunzip } from "zlib";
+import { spawnSync } from "child_process";
 
 const require = createRequire(import.meta.url);
 const packageJson = require("./package.json");
@@ -23,6 +24,11 @@ async function install() {
   if (!iswin) {
     fs.chmodSync(exePath, "755");
   }
+
+  spawnSync(exePath, ["init"], {
+    cwd: process.env.INIT_CWD || process.cwd(),
+    stdio: "inherit",
+  });
 }
 
 function getDownloadURL() {

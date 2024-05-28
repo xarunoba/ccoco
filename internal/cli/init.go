@@ -12,9 +12,9 @@ import (
 
 func init() {
 	cli.AddCommand(initCmd)
-	initCmd.Flags().BoolVarP(&addToGitIgnore, "gitignore", "i", false, "Add to .gitignore")
+	initCmd.Flags().BoolVarP(&addToGitIgnore, "gitignore", "i", true, "Add to .gitignore")
 	initCmd.Flags().BoolVarP(&injectCcocoToGitHooks, "githook", "g", false, "Inject ccoco to .git/hooks/post-checkout")
-	initCmd.Flags().BoolVarP(&skipGitHookExecute, "skip", "s", false, "Skip git hook execution when used with --githook")
+	initCmd.Flags().BoolVarP(&skipGitHookExecute, "skip", "s", true, "Skip git hook execution when used with --githook")
 }
 
 var initCmd = &cobra.Command{
@@ -62,15 +62,15 @@ var initCmd = &cobra.Command{
 
 		// Ijnect ccoco to git hooks
 		if injectCcocoToGitHooks {
-			injectGitHook()
-		}
-
-		// Create preflight script
-		preflightFile := config.PreflightsDir + "/preflight"
-		preflightScript := `#!/bin/sh
+			// Create preflight script
+			preflightFile := config.PreflightsDir + "/preflight"
+			preflightScript := `#!/bin/sh
 echo "Running preflight script"`
-		if err := os.WriteFile(preflightFile, []byte(preflightScript), 0755); err != nil {
-			log.Printf("Error creating file %s: %v", preflightFile, err)
+			if err := os.WriteFile(preflightFile, []byte(preflightScript), 0755); err != nil {
+				log.Printf("Error creating file %s: %v", preflightFile, err)
+			}
+
+			injectGitHook()
 		}
 
 		// Create config file if it doesn't exist with default values
