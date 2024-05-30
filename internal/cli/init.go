@@ -52,7 +52,7 @@ var initCmd = &cobra.Command{
 				// Check if .ccoco is already in .gitignore
 				if !strings.Contains(string(gitignoreData), ".ccoco") {
 					// Append .ccoco to .gitignore
-					gitignoreData = append(gitignoreData, gitignoreData...)
+					gitignoreData = append(gitignoreData, ".ccoco\n"...)
 					if err := os.WriteFile(gitignoreFile, gitignoreData, 0644); err != nil {
 						log.Printf("Error creating file %s: %v", gitignoreFile, err)
 					}
