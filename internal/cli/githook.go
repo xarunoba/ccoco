@@ -2,70 +2,14 @@ package cli
 
 import (
 	"log"
-	"os"
-	"os/exec"
-	"path/filepath"
-	"runtime"
 
-	"github.com/go-git/go-git/v5"
 	"github.com/spf13/cobra"
-	"github.com/xarunoba/ccoco/internal/config"
+	"github.com/xarunoba/ccoco/pkg/ccoco"
 )
 
 func init() {
 	cli.AddCommand(githookCmd)
 	githookCmd.Flags().BoolVarP(&skipGitHookExecute, "skip", "s", false, "Skip git hook execution")
-}
-
-// Generates the post-checkout script
-func getPostCheckoutScript() string {
-	script := `#!/bin/sh
-# Skip ccoco if SKIP_CCOCO is set to 1
-if [ "$SKIP_CCOCO" = "1" ]; then
-	echo "SKIP_CCOCO is set to 1, skipping ccoco."
-	exit 0
-fi
-
-# Run all preflight scripts
-for file in ./` + config.PreflightsDir + `/*; do
-  # Check if the file is executable
-  if [ -x "$file" ]; then
-    echo "Running $file"
-    "$file"
-  else
-    echo "Cannot execute $file. Skipping."
-  fi
-done
-
-# Run ccoco
-`
-
-	// Open repository to check if it exists
-	repository, err := git.PlainOpen(".")
-	if err != nil {
-		log.Fatalf("Error opening repository: %v", err)
-	}
-
-	// Get the worktree of the repository
-	worktree, err := repository.Worktree()
-	if err != nil {
-		log.Fatalf("Error getting worktree: %v", err)
-	}
-
-	// Get the relative path from the git worktree root to ccoco executable
-	relativePath, err := filepath.Rel(worktree.Filesystem.Root(), os.Args[0])
-
-	// Convert Windows paths to Unix
-	if runtime.GOOS == "windows" {
-		relativePath = filepath.ToSlash(relativePath)
-	}
-	if err != nil {
-		log.Fatalf("Error getting relative path: %v", err)
-	}
-
-	script += relativePath + " run"
-
-	return script
 }
 
 var githookCmd = &cobra.Command{
@@ -76,39 +20,10 @@ var githookCmd = &cobra.Command{
 This will add a post-checkout hook to automatically change config on checkout.
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
-		injectGitHook()
-	},
-}
-
-// Injects ccoco to git hooks
-func injectGitHook() {
-
-	// Open repository to check if it exists
-	_, err := git.PlainOpen(".")
-	if err != nil {
-		log.Fatalf("Error opening repository: %v", err)
-	}
-
-	script := getPostCheckoutScript()
-	path := ".git/hooks/post-checkout"
-
-	// Write the post-checkout hook script to the file
-	if err := os.WriteFile(path, []byte(script), 0755); err != nil {
-		log.Fatalf("Error writing post-checkout hook: %v", err)
-	}
-
-	// Execute the post-checkout hook when skipGitHookExecute is false
-	if !skipGitHookExecute {
-		executable := exec.Command("/bin/sh", path)
-		executable.Stdout = os.Stdout
-		executable.Stderr = os.Stderr
-		err = executable.Run()
-		if err != nil {
-			log.Fatalf("Error executing post-checkout hook: %v", err)
+		if err := app.AddToGitHooks(ccoco.AddToGitHooksOptions{
+			SkipExecution: skipGitHookExecute,
+		}); err != nil {
+			log.Fatalf("Error adding to git hooks: %v", err)
 		}
-	} else {
-		log.Println("Skipped post-checkout hook execution")
-	}
-
-	log.Println("Post-checkout hook injected")
+	},
 }
