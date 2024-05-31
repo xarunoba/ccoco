@@ -168,18 +168,24 @@ func IsInitialized(root, configs, preflights, configFileName string) (*bool, err
 	return &initialized, nil
 }
 
-func (c *Ccoco) Load(gitClient *Git, directories *Directories, configFile *File) error {
+type LoadOptions struct {
+	GitClient   *Git
+	Directories *Directories
+	ConfigFile  *File
+}
+
+func (c *Ccoco) Load(opts LoadOptions) error {
 	if c == nil {
 		return errors.New("ccoco is nil")
 	}
-	if gitClient != nil {
-		c.gitClient = gitClient
+	if opts.GitClient != nil {
+		c.gitClient = opts.GitClient
 	}
-	if directories != nil {
-		c.directories = directories
+	if opts.Directories != nil {
+		c.directories = opts.Directories
 	}
-	if configFile != nil {
-		c.configFile = configFile
+	if opts.ConfigFile != nil {
+		c.configFile = opts.ConfigFile
 	}
 	return nil
 }
