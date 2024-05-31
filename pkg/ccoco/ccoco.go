@@ -198,35 +198,39 @@ type AddToGitHooksOptions struct {
 func (c Ccoco) AddToGitHooks(opts AddToGitHooksOptions) error {
 
 	script := `#!/bin/sh
-	# Skip ccoco if SKIP_CCOCO is set to 1
-	if [ "$SKIP_CCOCO" = "1" ]; then
-		echo "SKIP_CCOCO is set to 1, skipping ccoco."
-		exit 0
-	fi
+# Skip ccoco if SKIP_CCOCO is set to 1
+if [ "$SKIP_CCOCO" = "1" ]; then
+	echo "SKIP_CCOCO is set to 1, skipping ccoco."
+	exit 0
+fi
 	
 	# Run all preflight scripts
-	for file in ./` + c.directories.Preflights + `/*; do
-	  # Check if the file is executable
-	  if [ -x "$file" ]; then
+for file in ./` + c.directories.Preflights + `/*; do
+	# Check if the file is executable
+	if [ -x "$file" ]; then
 		echo "Running $file"
 		"$file"
-	  else
+	else
 		echo "Cannot execute $file. Skipping."
-	  fi
-	done
-	
-	# Run ccoco
-	`
+	fi
+done
 
+# Run ccoco
+`
+
+	// Get the absolute path of the git worktree root
+	absRootPath, err := filepath.Abs(c.gitClient.RootPathFromCwd)
+	if err != nil {
+		return err
+	}
 	// Get the relative path from the git worktree root to ccoco executable
-	relativePath, err := filepath.Rel(c.gitClient.RootPathFromCwd, os.Args[0])
-
+	relativePath, err := filepath.Rel(absRootPath, os.Args[0])
+	if err != nil {
+		return err
+	}
 	// Convert Windows paths to Unix
 	if runtime.GOOS == "windows" {
 		relativePath = filepath.ToSlash(relativePath)
-	}
-	if err != nil {
-		log.Fatalf("Error getting relative path: %v", err)
 	}
 
 	script += relativePath + " run"
@@ -235,7 +239,7 @@ func (c Ccoco) AddToGitHooks(opts AddToGitHooksOptions) error {
 
 	// Write the post-checkout hook script to the file
 	if err := os.WriteFile(path, []byte(script), 0755); err != nil {
-		log.Fatalf("Error writing post-checkout hook: %v", err)
+		return err
 	}
 
 	// Execute the post-checkout hook when SkipExecution is false
@@ -245,7 +249,7 @@ func (c Ccoco) AddToGitHooks(opts AddToGitHooksOptions) error {
 		executable.Stderr = os.Stderr
 		err = executable.Run()
 		if err != nil {
-			log.Fatalf("Error executing post-checkout hook: %v", err)
+			return err
 		}
 	} else {
 		log.Println("Skipped post-checkout hook execution")
