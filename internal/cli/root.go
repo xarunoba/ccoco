@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"encoding/json"
 	"log"
 	"os"
 	"path/filepath"
@@ -12,7 +13,29 @@ import (
 var app *ccoco.Ccoco
 
 func init() {
-	instance, err := ccoco.New()
+	gitClient, err := ccoco.NewGitClient(".")
+	if err != nil {
+		log.Fatalf("Error initializing ccoco: %v", err)
+	}
+	directories := &ccoco.Directories{
+		Root:       ccoco.DefaultRootDirectory,
+		Configs:    ccoco.DefaultConfigDirectory,
+		Preflights: ccoco.DefaultPreflightDirectory,
+	}
+	rootPathFromCwd := gitClient.RootPathFromCwd
+	configFileContent, err := os.ReadFile(filepath.Join(rootPathFromCwd, ccoco.DefaultConfigFile))
+	if err != nil {
+		log.Fatalf("Error initializing ccoco: %v", err)
+	}
+	content := &ccoco.FileContent{}
+	if err := json.Unmarshal(configFileContent, &content); err != nil {
+		log.Fatalf("Error initializing ccoco: %v", err)
+	}
+	configFile := &ccoco.File{
+		Name:    ccoco.DefaultConfigFile,
+		Content: content,
+	}
+	instance, err := ccoco.NewWithOptions(gitClient, directories, configFile)
 	if err != nil {
 		log.Fatalf("Error initializing ccoco: %v", err)
 	}
