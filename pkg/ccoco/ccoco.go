@@ -464,7 +464,7 @@ func (c Ccoco) AddToFiles(files []string) error {
 		}
 	}
 
-	configData, err := json.MarshalIndent(c.configFile, "", "  ")
+	configData, err := json.MarshalIndent(c.configFile.Content, "", "  ")
 	if err != nil {
 		return err
 	}
@@ -499,7 +499,7 @@ func (c Ccoco) RemoveFromFiles(files []string) error {
 	}
 	c.configFile.Content.Files = newFiles
 
-	configData, err := json.MarshalIndent(c.configFile, "", "  ")
+	configData, err := json.MarshalIndent(c.configFile.Content, "", "  ")
 	if err != nil {
 		return err
 	}
