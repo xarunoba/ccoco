@@ -145,20 +145,43 @@ func (c Ccoco) Init(opts InitOptions) error {
 	return nil
 }
 
-func (c Ccoco) IsInitialized() bool {
-	if _, err := os.Stat(filepath.Join(c.gitClient.RootPathFromCwd, c.directories.Root)); os.IsNotExist(err) {
-		return false
+func IsInitialized(root, configs, preflights, configFileName string) (*bool, error) {
+	gitClient, err := NewGitClient(".")
+	if err != nil {
+		return nil, err
 	}
-	if _, err := os.Stat(filepath.Join(c.gitClient.RootPathFromCwd, c.directories.Configs)); os.IsNotExist(err) {
-		return false
+	initialized := false
+	if _, err := os.Stat(filepath.Join(gitClient.RootPathFromCwd, root)); os.IsNotExist(err) {
+		return &initialized, nil
 	}
-	if _, err := os.Stat(filepath.Join(c.gitClient.RootPathFromCwd, c.directories.Preflights)); os.IsNotExist(err) {
-		return false
+	if _, err := os.Stat(filepath.Join(gitClient.RootPathFromCwd, configs)); os.IsNotExist(err) {
+		return &initialized, nil
 	}
-	if _, err := os.Stat(filepath.Join(c.gitClient.RootPathFromCwd, c.configFile.Name)); os.IsNotExist(err) {
-		return false
+	if _, err := os.Stat(filepath.Join(gitClient.RootPathFromCwd, preflights)); os.IsNotExist(err) {
+		return &initialized, nil
 	}
-	return true
+	if _, err := os.Stat(filepath.Join(gitClient.RootPathFromCwd, configFileName)); os.IsNotExist(err) {
+		return &initialized, nil
+	}
+
+	initialized = true
+	return &initialized, nil
+}
+
+func (c *Ccoco) Load(gitClient *Git, directories *Directories, configFile *File) error {
+	if c == nil {
+		return errors.New("ccoco is nil")
+	}
+	if gitClient != nil {
+		c.gitClient = gitClient
+	}
+	if directories != nil {
+		c.directories = directories
+	}
+	if configFile != nil {
+		c.configFile = configFile
+	}
+	return nil
 }
 
 func (c Ccoco) AddToGitIgnore() error {
@@ -266,7 +289,11 @@ type RunOptions struct {
 
 func (c Ccoco) Run(opts RunOptions) error {
 	// Check if configs are initialized
-	if !c.IsInitialized() {
+	initialized, err := IsInitialized(c.directories.Root, c.directories.Configs, c.directories.Preflights, c.configFile.Name)
+	if err != nil {
+		return err
+	}
+	if !*initialized {
 		return errors.New("ccoco is not initialized. run ccoco init first")
 	}
 	// Get current branch from options
@@ -343,9 +370,14 @@ func (c Ccoco) Run(opts RunOptions) error {
 
 func (c Ccoco) ChangeConfigFiles(currentBranch string) error {
 	// Check if configs are initialized
-	if !c.IsInitialized() {
+	initialized, err := IsInitialized(c.directories.Root, c.directories.Configs, c.directories.Preflights, c.configFile.Name)
+	if err != nil {
+		return err
+	}
+	if !*initialized {
 		return errors.New("ccoco is not initialized. run ccoco init first")
 	}
+
 	for _, file := range c.configFile.Content.Files {
 		// Encode file name to base58
 		encodedFile := file
@@ -390,7 +422,11 @@ func (c Ccoco) ChangeConfigFiles(currentBranch string) error {
 
 func (c Ccoco) GenerateConfigs() error {
 	// Check if configs are initialized
-	if !c.IsInitialized() {
+	initialized, err := IsInitialized(c.directories.Root, c.directories.Configs, c.directories.Preflights, c.configFile.Name)
+	if err != nil {
+		return err
+	}
+	if !*initialized {
 		return errors.New("ccoco is not initialized. run ccoco init first")
 	}
 
@@ -449,7 +485,11 @@ func (c Ccoco) GenerateConfigs() error {
 
 func (c Ccoco) AddToFiles(files []string) error {
 	// Check if configs are initialized
-	if !c.IsInitialized() {
+	initialized, err := IsInitialized(c.directories.Root, c.directories.Configs, c.directories.Preflights, c.configFile.Name)
+	if err != nil {
+		return err
+	}
+	if !*initialized {
 		return errors.New("ccoco is not initialized. run ccoco init first")
 	}
 
@@ -482,7 +522,11 @@ func (c Ccoco) AddToFiles(files []string) error {
 
 func (c Ccoco) RemoveFromFiles(files []string) error {
 	// Check if configs are initialized
-	if !c.IsInitialized() {
+	initialized, err := IsInitialized(c.directories.Root, c.directories.Configs, c.directories.Preflights, c.configFile.Name)
+	if err != nil {
+		return err
+	}
+	if !*initialized {
 		return errors.New("ccoco is not initialized. run ccoco init first")
 	}
 
