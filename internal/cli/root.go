@@ -12,28 +12,12 @@ import (
 var app *ccoco.Ccoco
 
 func init() {
-	initialized, err := ccoco.IsInitialized(ccoco.DefaultRootDirectory, ccoco.DefaultConfigFile, ccoco.DefaultConfigDirectory, ccoco.DefaultPreflightDirectory)
-	if err != nil {
-		log.Fatalf("Error initializing ccoco: %v", err)
-	}
 	instance, err := ccoco.New()
 	if err != nil {
 		log.Fatalf("Error initializing ccoco: %v", err)
 	}
 
-	if *initialized {
-		if err := instance.Load(nil, nil, &ccoco.File{
-			Name: ccoco.DefaultConfigFile,
-			Content: &ccoco.FileContent{
-				Files: []string{".env"},
-			},
-		}); err != nil {
-			log.Fatalf("Error initializing ccoco: %v", err)
-		}
-	}
-
 	app = instance
-
 }
 
 var cli = &cobra.Command{

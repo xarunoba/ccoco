@@ -42,7 +42,29 @@ func New() (*Ccoco, error) {
 			Files: []string{".env"},
 		},
 	}
-	return NewWithOptions(gitClient, directories, configFile)
+
+	instance, err := NewWithOptions(gitClient, directories, configFile)
+	if err != nil {
+		return nil, err
+	}
+
+	if instance.IsInitialized() {
+		data, err := os.ReadFile(filepath.Join(gitClient.RootPathFromCwd, configFile.Name))
+		if err != nil {
+			return nil, err
+		}
+		err = json.Unmarshal(data, &configFile.Content)
+		if err != nil {
+			return nil, err
+		}
+		if err := instance.Load(LoadOptions{
+			ConfigFile: configFile,
+		}); err != nil {
+			return nil, err
+		}
+	}
+
+	return instance, nil
 }
 
 func NewWithOptions(gitClient *Git, directories *Directories, configFile *File) (*Ccoco, error) {
@@ -145,27 +167,21 @@ func (c Ccoco) Init(opts InitOptions) error {
 	return nil
 }
 
-func IsInitialized(root, configs, preflights, configFileName string) (*bool, error) {
-	gitClient, err := NewGitClient(".")
-	if err != nil {
-		return nil, err
+func (c Ccoco) IsInitialized() bool {
+	if _, err := os.Stat(filepath.Join(c.gitClient.RootPathFromCwd, c.directories.Root)); os.IsNotExist(err) {
+		return false
 	}
-	initialized := false
-	if _, err := os.Stat(filepath.Join(gitClient.RootPathFromCwd, root)); os.IsNotExist(err) {
-		return &initialized, nil
+	if _, err := os.Stat(filepath.Join(c.gitClient.RootPathFromCwd, c.directories.Configs)); os.IsNotExist(err) {
+		return false
 	}
-	if _, err := os.Stat(filepath.Join(gitClient.RootPathFromCwd, configs)); os.IsNotExist(err) {
-		return &initialized, nil
+	if _, err := os.Stat(filepath.Join(c.gitClient.RootPathFromCwd, c.directories.Preflights)); os.IsNotExist(err) {
+		return false
 	}
-	if _, err := os.Stat(filepath.Join(gitClient.RootPathFromCwd, preflights)); os.IsNotExist(err) {
-		return &initialized, nil
-	}
-	if _, err := os.Stat(filepath.Join(gitClient.RootPathFromCwd, configFileName)); os.IsNotExist(err) {
-		return &initialized, nil
+	if _, err := os.Stat(filepath.Join(c.gitClient.RootPathFromCwd, c.configFile.Name)); os.IsNotExist(err) {
+		return false
 	}
 
-	initialized = true
-	return &initialized, nil
+	return true
 }
 
 type LoadOptions struct {
@@ -295,12 +311,8 @@ type RunOptions struct {
 
 func (c Ccoco) Run(opts RunOptions) error {
 	// Check if configs are initialized
-	initialized, err := IsInitialized(c.directories.Root, c.directories.Configs, c.directories.Preflights, c.configFile.Name)
-	if err != nil {
-		return err
-	}
-	if !*initialized {
-		return errors.New("ccoco is not initialized. run ccoco init first")
+	if !c.IsInitialized() {
+		return errors.New("ccoco is not initialized properly. please reinitialize it")
 	}
 	// Get current branch from options
 	currentBranch := *opts.ForceToBranch
@@ -376,12 +388,8 @@ func (c Ccoco) Run(opts RunOptions) error {
 
 func (c Ccoco) ChangeConfigFiles(currentBranch string) error {
 	// Check if configs are initialized
-	initialized, err := IsInitialized(c.directories.Root, c.directories.Configs, c.directories.Preflights, c.configFile.Name)
-	if err != nil {
-		return err
-	}
-	if !*initialized {
-		return errors.New("ccoco is not initialized. run ccoco init first")
+	if !c.IsInitialized() {
+		return errors.New("ccoco is not initialized properly. please reinitialize it")
 	}
 
 	for _, file := range c.configFile.Content.Files {
@@ -428,12 +436,8 @@ func (c Ccoco) ChangeConfigFiles(currentBranch string) error {
 
 func (c Ccoco) GenerateConfigs() error {
 	// Check if configs are initialized
-	initialized, err := IsInitialized(c.directories.Root, c.directories.Configs, c.directories.Preflights, c.configFile.Name)
-	if err != nil {
-		return err
-	}
-	if !*initialized {
-		return errors.New("ccoco is not initialized. run ccoco init first")
+	if !c.IsInitialized() {
+		return errors.New("ccoco is not initialized properly. please reinitialize it")
 	}
 
 	headBranchInfo, err := c.gitClient.Repository.Head()
@@ -491,12 +495,8 @@ func (c Ccoco) GenerateConfigs() error {
 
 func (c Ccoco) AddToFiles(files []string) error {
 	// Check if configs are initialized
-	initialized, err := IsInitialized(c.directories.Root, c.directories.Configs, c.directories.Preflights, c.configFile.Name)
-	if err != nil {
-		return err
-	}
-	if !*initialized {
-		return errors.New("ccoco is not initialized. run ccoco init first")
+	if !c.IsInitialized() {
+		return errors.New("ccoco is not initialized properly. please reinitialize it")
 	}
 
 	// Add files to config file
@@ -528,12 +528,8 @@ func (c Ccoco) AddToFiles(files []string) error {
 
 func (c Ccoco) RemoveFromFiles(files []string) error {
 	// Check if configs are initialized
-	initialized, err := IsInitialized(c.directories.Root, c.directories.Configs, c.directories.Preflights, c.configFile.Name)
-	if err != nil {
-		return err
-	}
-	if !*initialized {
-		return errors.New("ccoco is not initialized. run ccoco init first")
+	if !c.IsInitialized() {
+		return errors.New("ccoco is not initialized properly. please reinitialize it")
 	}
 
 	// Remove files from config file
