@@ -6,7 +6,18 @@ import (
 	"path/filepath"
 
 	"github.com/spf13/cobra"
+	"github.com/xarunoba/ccoco/pkg/ccoco"
 )
+
+var app *ccoco.Ccoco
+
+func init() {
+	instance, err := ccoco.New()
+	if err != nil {
+		log.Fatalf("Error initializing ccoco: %v", err)
+	}
+	app = instance
+}
 
 var cli = &cobra.Command{
 	Use:   filepath.Base(os.Args[0]),
