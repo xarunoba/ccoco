@@ -417,7 +417,7 @@ func (c Ccoco) GenerateConfigs() error {
 		}
 		for _, file := range c.configFile.Content.Files {
 			// Add actual file name to the first line of the file
-			data := []byte("CCOCO GENERATED FILE - " + file + "- DO NOT REMOVE OR EDIT THIS LINE\n")
+			data := []byte("CCOCO GENERATED FILE - " + file + " - DO NOT REMOVE OR EDIT THIS LINE\n")
 
 			// Encode to base58 to flatten file
 			encodedFile := file
