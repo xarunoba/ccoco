@@ -14,7 +14,7 @@
   },
   "scripts": {
     "install": "node install.js",
-    "prepare": "npx simple-git-hooks"
+    "setup-dev": "npx simple-git-hooks"
   },
   "author": "Jeter Jude C. Santos <me@xaru.win> (https://xaru.win)",
   "license": "MIT",
