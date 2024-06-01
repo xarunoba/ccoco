@@ -1,8 +1,6 @@
 package cli
 
 import (
-	"log"
-
 	"github.com/spf13/cobra"
 	"github.com/xarunoba/ccoco/pkg/ccoco"
 )
@@ -17,9 +15,17 @@ func init() {
 var initCmd = &cobra.Command{
 	Use:     "init",
 	Aliases: []string{"i"},
-	Short:   "Initialize config file",
-	Long:    `Initialize config file.`,
-	Run: func(cmd *cobra.Command, args []string) {
+	Short:   "Initialize ccoco",
+	Long:    `Initialize ccoco in the current git repository.`,
+	PreRunE: func(cmd *cobra.Command, args []string) error {
+		instance, err := ccoco.New()
+		if err != nil {
+			return err
+		}
+		app = instance
+		return nil
+	},
+	RunE: func(cmd *cobra.Command, args []string) error {
 		if err := app.Init(ccoco.InitOptions{
 			AddToGitIgnore: addToGitIgnore,
 			AddToGitHooks:  injectCcocoToGitHooks,
@@ -27,7 +33,8 @@ var initCmd = &cobra.Command{
 				SkipExecution: skipGitHookExecute,
 			},
 		}); err != nil {
-			log.Fatalf("Error initializing ccoco: %v", err)
+			return err
 		}
+		return nil
 	},
 }

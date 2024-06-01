@@ -1,9 +1,8 @@
 package cli
 
 import (
-	"log"
-
 	"github.com/spf13/cobra"
+	"github.com/xarunoba/ccoco/pkg/ccoco"
 )
 
 func init() {
@@ -13,14 +12,23 @@ func init() {
 var addCmd = &cobra.Command{
 	Use:     "add [file1 file2 ...]",
 	Aliases: []string{"a"},
-	Short:   "Add file to config",
+	Short:   "Add file/s to config",
 	Long: `Adds file/s to config.
-This will add file/s to the ccoco.config.json for ccoco to generate.
+This will add file/s to the ` + app.ConfigFile().Name + ` for ccoco to generate.
 `,
 	Args: cobra.MinimumNArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		if err := app.AddToFiles(args); err != nil {
-			log.Fatalf("Error adding files: %v", err)
+	PreRunE: func(cmd *cobra.Command, args []string) error {
+		instance, err := ccoco.New()
+		if err != nil {
+			return err
 		}
+		app = instance
+		return nil
+	},
+	RunE: func(cmd *cobra.Command, args []string) error {
+		if err := app.AddToFiles(args); err != nil {
+			return err
+		}
+		return nil
 	},
 }

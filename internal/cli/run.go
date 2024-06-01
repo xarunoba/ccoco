@@ -1,8 +1,6 @@
 package cli
 
 import (
-	"log"
-
 	"github.com/spf13/cobra"
 	"github.com/xarunoba/ccoco/pkg/ccoco"
 )
@@ -17,9 +15,18 @@ var runCmd = &cobra.Command{
 	Short:   "Run ccoco",
 	Long: `Run ccoco. 
 This will change config files based on your current branch.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		if err := app.Run(ccoco.RunOptions{}); err != nil {
-			log.Fatalf("Error running ccoco: %v", err)
+	PreRunE: func(cmd *cobra.Command, args []string) error {
+		instance, err := ccoco.New()
+		if err != nil {
+			return err
 		}
+		app = instance
+		return nil
+	},
+	RunE: func(cmd *cobra.Command, args []string) error {
+		if err := app.Run(ccoco.RunOptions{}); err != nil {
+			return err
+		}
+		return nil
 	},
 }

@@ -1,9 +1,8 @@
 package cli
 
 import (
-	"log"
-
 	"github.com/spf13/cobra"
+	"github.com/xarunoba/ccoco/pkg/ccoco"
 )
 
 func init() {
@@ -18,9 +17,18 @@ var generateCmd = &cobra.Command{
 This will populate the branch configs folder based on the existing branches.
 	`,
 	Args: cobra.NoArgs,
-	Run: func(cmd *cobra.Command, args []string) {
-		if err := app.GenerateConfigs(); err != nil {
-			log.Fatalf("Error generating configs: %v", err)
+	PreRunE: func(cmd *cobra.Command, args []string) error {
+		instance, err := ccoco.New()
+		if err != nil {
+			return err
 		}
+		app = instance
+		return nil
+	},
+	RunE: func(cmd *cobra.Command, args []string) error {
+		if err := app.GenerateConfigs(); err != nil {
+			return err
+		}
+		return nil
 	},
 }
