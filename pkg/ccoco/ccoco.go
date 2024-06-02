@@ -315,7 +315,7 @@ func (c Ccoco) Run(opts RunOptions) error {
 		return errors.New("ccoco is not initialized properly. please reinitialize it")
 	}
 	// Get current branch from options
-	currentBranch := *opts.ForceToBranch
+	currentBranch := ""
 	if opts.ForceToBranch == nil || currentBranch == "" {
 		// Get current branch from git
 		currentBranchInfo, err := c.gitClient.Repository.Head()
@@ -323,6 +323,8 @@ func (c Ccoco) Run(opts RunOptions) error {
 			log.Fatalf("Error getting current branch: %v", err)
 		}
 		currentBranch = currentBranchInfo.Name().Short()
+	} else {
+		currentBranch = *opts.ForceToBranch
 	}
 
 	if strings.Contains(currentBranch, "/") {
