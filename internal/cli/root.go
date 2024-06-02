@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"log"
 	"os"
 	"path/filepath"
 
@@ -28,7 +27,5 @@ Integrate with git hooks to automatically change config on checkout.`,
 }
 
 func Execute() {
-	if err := cli.Execute(); err != nil {
-		log.Fatalf("Error executing ccoco: %v", err)
-	}
+	_ = cli.Execute()
 }
