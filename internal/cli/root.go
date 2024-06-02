@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/spf13/cobra"
+	"github.com/xarunoba/ccoco/internal/version"
 	"github.com/xarunoba/ccoco/pkg/ccoco"
 )
 
@@ -23,6 +24,7 @@ Integrate with git hooks to automatically change config on checkout.`,
 		}
 		return nil
 	},
+	Version: version.Version,
 }
 
 func Execute() {
