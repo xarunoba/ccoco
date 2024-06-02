@@ -24,7 +24,9 @@ This will change config files based on your current branch.`,
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if err := app.Run(ccoco.RunOptions{}); err != nil {
+		if err := app.Run(ccoco.RunOptions{
+			ForceToBranch: nil,
+		}); err != nil {
 			return err
 		}
 		return nil
