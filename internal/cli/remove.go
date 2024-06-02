@@ -14,7 +14,7 @@ var removeCmd = &cobra.Command{
 	Aliases: []string{"rm"},
 	Short:   "Remove files to config",
 	Long: `Remove files to config.
-This will remove file/s from the ` + app.ConfigFile().Name + ` for ccoco to generate.`,
+This will remove file/s from the config file for ccoco to generate.`,
 	Args: cobra.MinimumNArgs(1),
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		instance, err := ccoco.New()

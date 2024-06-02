@@ -14,7 +14,7 @@ var addCmd = &cobra.Command{
 	Aliases: []string{"a"},
 	Short:   "Add file/s to config",
 	Long: `Adds file/s to config.
-This will add file/s to the ` + app.ConfigFile().Name + ` for ccoco to generate.
+This will add file/s to the config file for ccoco to generate.
 `,
 	Args: cobra.MinimumNArgs(1),
 	PreRunE: func(cmd *cobra.Command, args []string) error {
