@@ -7,6 +7,8 @@
 
 Change your configurations on checkout for easy config environment change. Integrate with git hooks.
 
+> **WARNING: `ccoco` is currently in experimental mode. Every release might have breaking changes before `v1.0.0`. Make sure to specify the version you'd like to use.**
+
 ## Why
 
 My team didn't want to populate the `package.json` too much with scripts so I created a tool that can easily replace the main config files whenever a branch changed.
