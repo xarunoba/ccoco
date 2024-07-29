@@ -42,7 +42,29 @@ func New() (*Ccoco, error) {
 			Files: []string{".env"},
 		},
 	}
-	return NewWithOptions(gitClient, directories, configFile)
+
+	instance, err := NewWithOptions(gitClient, directories, configFile)
+	if err != nil {
+		return nil, err
+	}
+
+	if instance.IsInitialized() {
+		data, err := os.ReadFile(filepath.Join(gitClient.RootPathFromCwd, configFile.Name))
+		if err != nil {
+			return nil, err
+		}
+		err = json.Unmarshal(data, &configFile.Content)
+		if err != nil {
+			return nil, err
+		}
+		if err := instance.Load(LoadOptions{
+			ConfigFile: configFile,
+		}); err != nil {
+			return nil, err
+		}
+	}
+
+	return instance, nil
 }
 
 func NewWithOptions(gitClient *Git, directories *Directories, configFile *File) (*Ccoco, error) {
@@ -158,7 +180,30 @@ func (c Ccoco) IsInitialized() bool {
 	if _, err := os.Stat(filepath.Join(c.gitClient.RootPathFromCwd, c.configFile.Name)); os.IsNotExist(err) {
 		return false
 	}
+
 	return true
+}
+
+type LoadOptions struct {
+	GitClient   *Git
+	Directories *Directories
+	ConfigFile  *File
+}
+
+func (c *Ccoco) Load(opts LoadOptions) error {
+	if c == nil {
+		return errors.New("ccoco is nil")
+	}
+	if opts.GitClient != nil {
+		c.gitClient = opts.GitClient
+	}
+	if opts.Directories != nil {
+		c.directories = opts.Directories
+	}
+	if opts.ConfigFile != nil {
+		c.configFile = opts.ConfigFile
+	}
+	return nil
 }
 
 func (c Ccoco) AddToGitIgnore() error {
@@ -198,35 +243,39 @@ type AddToGitHooksOptions struct {
 func (c Ccoco) AddToGitHooks(opts AddToGitHooksOptions) error {
 
 	script := `#!/bin/sh
-	# Skip ccoco if SKIP_CCOCO is set to 1
-	if [ "$SKIP_CCOCO" = "1" ]; then
-		echo "SKIP_CCOCO is set to 1, skipping ccoco."
-		exit 0
-	fi
+# Skip ccoco if SKIP_CCOCO is set to 1
+if [ "$SKIP_CCOCO" = "1" ]; then
+	echo "SKIP_CCOCO is set to 1, skipping ccoco."
+	exit 0
+fi
 	
 	# Run all preflight scripts
-	for file in ./` + c.directories.Preflights + `/*; do
-	  # Check if the file is executable
-	  if [ -x "$file" ]; then
+for file in ./` + c.directories.Preflights + `/*; do
+	# Check if the file is executable
+	if [ -x "$file" ]; then
 		echo "Running $file"
 		"$file"
-	  else
+	else
 		echo "Cannot execute $file. Skipping."
-	  fi
-	done
-	
-	# Run ccoco
-	`
+	fi
+done
 
+# Run ccoco
+`
+
+	// Get the absolute path of the git worktree root
+	absRootPath, err := filepath.Abs(c.gitClient.RootPathFromCwd)
+	if err != nil {
+		return err
+	}
 	// Get the relative path from the git worktree root to ccoco executable
-	relativePath, err := filepath.Rel(c.gitClient.RootPathFromCwd, os.Args[0])
-
+	relativePath, err := filepath.Rel(absRootPath, os.Args[0])
+	if err != nil {
+		return err
+	}
 	// Convert Windows paths to Unix
 	if runtime.GOOS == "windows" {
 		relativePath = filepath.ToSlash(relativePath)
-	}
-	if err != nil {
-		log.Fatalf("Error getting relative path: %v", err)
 	}
 
 	script += relativePath + " run"
@@ -235,7 +284,7 @@ func (c Ccoco) AddToGitHooks(opts AddToGitHooksOptions) error {
 
 	// Write the post-checkout hook script to the file
 	if err := os.WriteFile(path, []byte(script), 0755); err != nil {
-		log.Fatalf("Error writing post-checkout hook: %v", err)
+		return err
 	}
 
 	// Execute the post-checkout hook when SkipExecution is false
@@ -245,7 +294,7 @@ func (c Ccoco) AddToGitHooks(opts AddToGitHooksOptions) error {
 		executable.Stderr = os.Stderr
 		err = executable.Run()
 		if err != nil {
-			log.Fatalf("Error executing post-checkout hook: %v", err)
+			return err
 		}
 	} else {
 		log.Println("Skipped post-checkout hook execution")
@@ -263,10 +312,10 @@ type RunOptions struct {
 func (c Ccoco) Run(opts RunOptions) error {
 	// Check if configs are initialized
 	if !c.IsInitialized() {
-		return errors.New("ccoco is not initialized. run ccoco init first")
+		return errors.New("ccoco is not initialized properly. please reinitialize it")
 	}
 	// Get current branch from options
-	currentBranch := *opts.ForceToBranch
+	currentBranch := ""
 	if opts.ForceToBranch == nil || currentBranch == "" {
 		// Get current branch from git
 		currentBranchInfo, err := c.gitClient.Repository.Head()
@@ -274,6 +323,8 @@ func (c Ccoco) Run(opts RunOptions) error {
 			log.Fatalf("Error getting current branch: %v", err)
 		}
 		currentBranch = currentBranchInfo.Name().Short()
+	} else {
+		currentBranch = *opts.ForceToBranch
 	}
 
 	if strings.Contains(currentBranch, "/") {
@@ -340,8 +391,9 @@ func (c Ccoco) Run(opts RunOptions) error {
 func (c Ccoco) ChangeConfigFiles(currentBranch string) error {
 	// Check if configs are initialized
 	if !c.IsInitialized() {
-		return errors.New("ccoco is not initialized. run ccoco init first")
+		return errors.New("ccoco is not initialized properly. please reinitialize it")
 	}
+
 	for _, file := range c.configFile.Content.Files {
 		// Encode file name to base58
 		encodedFile := file
@@ -387,7 +439,7 @@ func (c Ccoco) ChangeConfigFiles(currentBranch string) error {
 func (c Ccoco) GenerateConfigs() error {
 	// Check if configs are initialized
 	if !c.IsInitialized() {
-		return errors.New("ccoco is not initialized. run ccoco init first")
+		return errors.New("ccoco is not initialized properly. please reinitialize it")
 	}
 
 	headBranchInfo, err := c.gitClient.Repository.Head()
@@ -446,7 +498,7 @@ func (c Ccoco) GenerateConfigs() error {
 func (c Ccoco) AddToFiles(files []string) error {
 	// Check if configs are initialized
 	if !c.IsInitialized() {
-		return errors.New("ccoco is not initialized. run ccoco init first")
+		return errors.New("ccoco is not initialized properly. please reinitialize it")
 	}
 
 	// Add files to config file
@@ -460,7 +512,7 @@ func (c Ccoco) AddToFiles(files []string) error {
 		}
 	}
 
-	configData, err := json.MarshalIndent(c.configFile, "", "  ")
+	configData, err := json.MarshalIndent(c.configFile.Content, "", "  ")
 	if err != nil {
 		return err
 	}
@@ -479,7 +531,7 @@ func (c Ccoco) AddToFiles(files []string) error {
 func (c Ccoco) RemoveFromFiles(files []string) error {
 	// Check if configs are initialized
 	if !c.IsInitialized() {
-		return errors.New("ccoco is not initialized. run ccoco init first")
+		return errors.New("ccoco is not initialized properly. please reinitialize it")
 	}
 
 	// Remove files from config file
@@ -495,7 +547,7 @@ func (c Ccoco) RemoveFromFiles(files []string) error {
 	}
 	c.configFile.Content.Files = newFiles
 
-	configData, err := json.MarshalIndent(c.configFile, "", "  ")
+	configData, err := json.MarshalIndent(c.configFile.Content, "", "  ")
 	if err != nil {
 		return err
 	}

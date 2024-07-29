@@ -1,6 +1,6 @@
 {
   "name": "@xarunoba/ccoco",
-  "version": "0.9.1",
+  "version": "0.13.4",
   "description": "Change configs on checkout.",
   "main": "index.js",
   "repository": {
@@ -14,7 +14,7 @@
   },
   "scripts": {
     "install": "node install.js",
-    "prepare": "npx simple-git-hooks"
+    "setup-dev": "npx simple-git-hooks"
   },
   "author": "Jeter Jude C. Santos <me@xaru.win> (https://xaru.win)",
   "license": "MIT",
