@@ -1,6 +1,6 @@
 {
   "name": "@xarunoba/ccoco",
-  "version": "0.13.5",
+  "version": "0.13.6",
   "description": "Change configs on checkout.",
   "main": "index.js",
   "repository": {
