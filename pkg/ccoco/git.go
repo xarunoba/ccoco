@@ -32,7 +32,7 @@ func NewGitClient(path string) (*Git, error) {
 	// Check if worktree exists
 	if worktree == nil {
 		log.Println("No worktree found.")
-		return nil, errors.New("Error getting worktree: No worktree found.")
+		return nil, errors.New("error getting worktree: No worktree found")
 	}
 
 	// Get current directory
