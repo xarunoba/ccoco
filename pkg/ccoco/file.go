@@ -26,7 +26,7 @@ func (f *File) CheckState() error {
 }
 
 func (fc *FileContent) CheckState() error {
-	if fc.Files == nil || len(fc.Files) == 0 {
+	if len(fc.Files) == 0 {
 		return errors.New("file content is empty")
 	}
 	return nil
