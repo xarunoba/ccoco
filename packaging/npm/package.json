@@ -47,7 +47,7 @@
     "node-downloader-helper": "^2.1.9"
   },
   "devDependencies": {
-    "lint-staged": "^15.2.2",
+    "lint-staged": "^16.1.0",
     "prettier": "^3.2.5",
     "simple-git-hooks": "^2.11.1"
   },
