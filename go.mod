@@ -6,7 +6,7 @@ toolchain go1.24.1
 
 require (
 	github.com/btcsuite/btcd/btcutil v1.1.6
-	github.com/go-git/go-git/v5 v5.17.1
+	github.com/go-git/go-git/v5 v5.17.2
 	github.com/spf13/cobra v1.10.2
 )
 
